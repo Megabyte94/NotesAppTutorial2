@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "382251378395",
+    "project_id": "notesapptutorialyt",
+    "storage_bucket": "notesapptutorialyt.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:382251378395:android:966b11db7576dbab0b4efe",
+        "android_client_info": {
+          "package_name": "com.KennethSoftware.notes"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwyy-ujwr0AxO2kj7plfHASoIAmX640i0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
