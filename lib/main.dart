@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'package:flutter/material.dart';
+import 'package:notes/firebase_options.dart';
+import 'package:notes/views/login_view.dart';
+import 'package:notes/views/register_view.dart';
 
 // App entry point
 void main() {
@@ -23,50 +25,24 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      home: const InitialView(),
     );
   }
 }
 
-//1----------
+//2--------------------
 
-// Home page
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+// Initial view
+class InitialView extends StatelessWidget {
+  const InitialView({super.key});
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  // Initialize text editing controllers
-  late final TextEditingController _email;
-  late final TextEditingController _password;
-
-  // It creates instances of TextEditingController and assigns them to the _email and _password variables.
-  @override
-  void initState() {
-    _email = TextEditingController();
-    _password = TextEditingController();
-    super.initState();
-  }
-
-  /* This code disposes the text editing controllers when the widget is removed from the widget tree.
-  It calls the dispose() method on the _email and _password controllers to release any resources they hold.*/
-  @override
-  void dispose() {
-    _email.dispose();
-    _password.dispose();
-    super.dispose();
-  }
-
-  // This method builds the widget tree for the HomePage widget.
+  // This method builds the widget tree for the InitialView widget.
   @override
   Widget build(BuildContext context) {
     // Create a Scaffold widget with an AppBar and a body.
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Register"),
+          title: const Text("Initial view"),
         ),
         body: FutureBuilder(
           future: Firebase.initializeApp(
@@ -81,32 +57,15 @@ class _HomePageState extends State<HomePage> {
               case ConnectionState.active:
                 return const Text('Active');
               case ConnectionState.done:
-                return Column(
-                  children: [
-                    TextField(
-                      controller: _email,
-                      decoration: const InputDecoration(labelText: 'Email'),
-                    ),
-                    TextField(
-                      controller: _password,
-                      decoration: const InputDecoration(labelText: 'Password'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        try {
-                          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                            email: _email.text,
-                            password: _password.text,
-                          );
-                        } on FirebaseAuthException catch (e) {
-                          print('Failed with error code: ${e.code}');
-                          print(e.message);
-                        }
-                      },
-                      child: const Text('Register'),
-                    ),
-                  ],
-                );
+                final user = FirebaseAuth.instance.currentUser;
+                final emailVerified = user?.emailVerified ?? false;
+
+                if (emailVerified) {
+                  return const Text('Email verified');
+                } else {
+                  return const Text('Email not verified');
+                }
+
               default:
                 return const Text('Error initializing Firebase');
             }
