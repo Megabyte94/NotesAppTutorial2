@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:notes/firebase_options.dart';
+import 'package:notes/views/email_verification.dart';
 import 'package:notes/views/login_view.dart';
 import 'package:notes/views/register_view.dart';
 
@@ -26,6 +27,11 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const InitialView(),
+      routes: {
+        '/login/': (context) => const LoginView(),
+        '/register/': (context) => const RegisterView(),
+        '/email_verification/': (context) => const EmailVerificationView(),
+      },
     );
   }
 }
@@ -40,36 +46,29 @@ class InitialView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Create a Scaffold widget with an AppBar and a body.
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text("Initial view"),
-        ),
-        body: FutureBuilder(
-          future: Firebase.initializeApp(
-            options: DefaultFirebaseOptions.currentPlatform,
-          ),
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.none:
-                return const Text('None');
-              case ConnectionState.waiting:
-                return const CircularProgressIndicator();
-              case ConnectionState.active:
-                return const Text('Active');
-              case ConnectionState.done:
-                final user = FirebaseAuth.instance.currentUser;
-                final emailVerified = user?.emailVerified ?? false;
-
-                if (emailVerified) {
-                  return const Text('Email verified');
-                } else {
-                  return const Text('Email not verified');
-                }
-
-              default:
-                return const Text('Error initializing Firebase');
+    return FutureBuilder(
+      future: Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      ),
+      builder: (context, snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.done:
+            final user = FirebaseAuth.instance.currentUser;
+            if (user != null) {
+              if (user.emailVerified) {
+                return const Text('Email verified');
+              } else {
+                return const EmailVerificationView();
+              }
+            } else {
+              return const LoginView();
             }
-          },
-        ));
+          default:
+            return const CircularProgressIndicator();
+        }
+      },
+    );
   }
 }
+
+//1----------

@@ -37,50 +37,37 @@ class _LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     // Create a Scaffold widget with an AppBar and a body.
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Login"),
-        ),
-        body: FutureBuilder(
-          future: Firebase.initializeApp(
-            options: DefaultFirebaseOptions.currentPlatform,
+      appBar: AppBar(title: const Text('Login'),),
+      body: Column(
+        children: [
+          TextField(
+            controller: _email,
+            decoration: const InputDecoration(labelText: 'Email'),
           ),
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.none:
-                return const Text('None');
-              case ConnectionState.waiting:
-                return const CircularProgressIndicator();
-              case ConnectionState.active:
-                return const Text('Active');
-              case ConnectionState.done:
-                return Column(
-                  children: [
-                    TextField(
-                      controller: _email,
-                      decoration: const InputDecoration(labelText: 'Email'),
-                    ),
-                    TextField(
-                      controller: _password,
-                      decoration: const InputDecoration(labelText: 'Password'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        try {
-                          final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email.text, password: _password.text);
-                          print(userCredential);
-                        } on FirebaseAuthException catch (e) {
-                          print('Failed with error code: ${e.code}');
-                          print(e.message);
-                        }
-                      },
-                      child: const Text('Login'),
-                    ),
-                  ],
-                );
-              default:
-                return const Text('Error initializing Firebase');
-            }
-          },
-        ));
+          TextField(
+            controller: _password,
+            decoration: const InputDecoration(labelText: 'Password'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              try {
+                final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email.text, password: _password.text);
+                print(userCredential);
+              } on FirebaseAuthException catch (e) {
+                print('Failed with error code: ${e.code}');
+                print(e.message);
+              }
+            },
+            child: const Text('Login'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pushNamedAndRemoveUntil('/register/', (route) => false);
+            },
+            child: const Text('Not registered yet? Register here!'),
+          ),
+        ],
+      ),
+    );
   }
 }
