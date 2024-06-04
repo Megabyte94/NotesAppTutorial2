@@ -37,7 +37,9 @@ class _LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     // Create a Scaffold widget with an AppBar and a body.
     return Scaffold(
-      appBar: AppBar(title: const Text('Login'),),
+      appBar: AppBar(
+        title: const Text('Login'),
+      ),
       body: Column(
         children: [
           TextField(
@@ -51,8 +53,11 @@ class _LoginViewState extends State<LoginView> {
           ElevatedButton(
             onPressed: () async {
               try {
-                final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email.text, password: _password.text);
-                print(userCredential);
+                await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email.text, password: _password.text);
+                final user = FirebaseAuth.instance.currentUser;
+                if (user != null) {
+                  Navigator.of(context).pushNamedAndRemoveUntil('/notes/', (route) => false);
+                }
               } on FirebaseAuthException catch (e) {
                 print('Failed with error code: ${e.code}');
                 print(e.message);

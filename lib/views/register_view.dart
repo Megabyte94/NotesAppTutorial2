@@ -51,8 +51,13 @@ class _RegisterViewState extends State<RegisterView> {
           ElevatedButton(
             onPressed: () async {
               try {
-                final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email.text, password: _password.text);
-                print(userCredential);
+                await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email.text, password: _password.text);
+                final user = FirebaseAuth.instance.currentUser;
+                if (user != null) {
+                  if (!user.emailVerified) {
+                    Navigator.of(context).pushNamedAndRemoveUntil('/email_verification/', (route) => false);
+                  }
+                }
               } on FirebaseAuthException catch (e) {
                 print('Failed with error code: ${e.code}');
                 print(e.message);
@@ -61,10 +66,10 @@ class _RegisterViewState extends State<RegisterView> {
             child: const Text('Register'),
           ),
           ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pushNamedAndRemoveUntil('/login/', (route) => false);
-            },
-            child: const Text('Already have an account? Login here!')),
+              onPressed: () {
+                Navigator.of(context).pushNamedAndRemoveUntil('/login/', (route) => false);
+              },
+              child: const Text('Already have an account? Login here!')),
         ],
       ),
     );
