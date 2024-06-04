@@ -51,6 +51,7 @@ class _RegisterViewState extends State<RegisterView> {
               try {
                 await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email.text, password: _password.text);
                 final user = FirebaseAuth.instance.currentUser;
+                user?.reload();
                 if (user != null) {
                   if (!user.emailVerified) {
                     Navigator.of(context).pushNamedAndRemoveUntil('/email_verification/', (route) => false);

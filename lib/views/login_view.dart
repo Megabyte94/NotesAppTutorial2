@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'dart:developer' as devtools show log;
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -54,11 +55,16 @@ class _LoginViewState extends State<LoginView> {
                 await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email.text, password: _password.text);
                 final user = FirebaseAuth.instance.currentUser;
                 if (user != null) {
-                  Navigator.of(context).pushNamedAndRemoveUntil('/notes/', (route) => false);
+                  if (user.emailVerified) {
+                    Navigator.of(context).pushNamedAndRemoveUntil('/notes/', (route) => false);
+                  }
+                  else {
+                    Navigator.of(context).pushNamedAndRemoveUntil('/email_verification/', (route) => false);
+                  }
                 }
               } on FirebaseAuthException catch (e) {
-                print('Failed with error code: ${e.code}');
-                print(e.message);
+                devtools.log('Failed with error code: ${e.code}');
+                devtools.log(e.message.toString());
               }
             },
             child: const Text('Login'),
