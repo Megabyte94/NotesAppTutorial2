@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:notes/constants/routes.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -54,7 +55,7 @@ class _RegisterViewState extends State<RegisterView> {
                 user?.reload();
                 if (user != null) {
                   if (!user.emailVerified) {
-                    Navigator.of(context).pushNamedAndRemoveUntil('/email_verification/', (route) => false);
+                    Navigator.of(context).pushNamedAndRemoveUntil(emailVerificationRoute, (route) => false);
                   }
                 }
               } on FirebaseAuthException catch (e) {
@@ -66,7 +67,7 @@ class _RegisterViewState extends State<RegisterView> {
           ),
           ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pushNamedAndRemoveUntil('/login/', (route) => false);
+                Navigator.of(context).pushNamedAndRemoveUntil(loginRoute, (route) => false);
               },
               child: const Text('Already have an account? Login here!')),
         ],
