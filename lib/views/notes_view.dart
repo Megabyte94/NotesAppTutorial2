@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:notes/constants/routes.dart';
+import 'package:notes/utilities/show_logout_dialog.dart';
 
 enum MenuAction {
   logout,
@@ -26,7 +27,9 @@ class _NotesViewState extends State<NotesView> {
                     final shouldLogout = await showLogoutDialog(context);
                     if (shouldLogout) {
                       await FirebaseAuth.instance.signOut();
-                      Navigator.of(context).pushNamedAndRemoveUntil(loginRoute, (route) => false);
+                      if (FirebaseAuth.instance.currentUser == null) {
+                        Navigator.of(context).pushNamedAndRemoveUntil(loginRoute, (route) => false);
+                      }
                     }
 
                     break;
@@ -47,32 +50,4 @@ class _NotesViewState extends State<NotesView> {
       body: const Text('Hello, world!'),
     );
   }
-}
-
-//2--------------------
-
-Future<bool> showLogoutDialog(BuildContext context) {
-  return showDialog<bool>(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text('Sign out'),
-        content: const Text('Are you sure you want to sign out of your account?'),
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop(false);
-            },
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop(true);
-            },
-            child: const Text('Confirm'),
-          ),
-        ],
-      );
-    },
-  ).then((value) => value ?? false);
 }

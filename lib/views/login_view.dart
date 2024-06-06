@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:notes/constants/routes.dart';
+import 'package:notes/utilities/show_error_dialog.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -54,19 +55,39 @@ class _LoginViewState extends State<LoginView> {
           ElevatedButton(
             onPressed: () async {
               try {
-                await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email.text, password: _password.text);
-                final user = FirebaseAuth.instance.currentUser;
-                if (user != null) {
-                  if (user.emailVerified) {
-                    Navigator.of(context).pushNamedAndRemoveUntil(notesRoute, (route) => false);
+                if (_email.text.isNotEmpty && _password.text.isNotEmpty) {
+                  await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email.text, password: _password.text);
+                  final user = FirebaseAuth.instance.currentUser;
+                  if (user != null) {
+                    if (user.emailVerified) {
+                      Navigator.of(context).pushNamedAndRemoveUntil(notesRoute, (route) => false);
+                    } else {
+                      Navigator.of(context).pushNamedAndRemoveUntil(emailVerificationRoute, (route) => false);
+                    }
                   }
-                  else {
-                    Navigator.of(context).pushNamedAndRemoveUntil(emailVerificationRoute, (route) => false);
-                  }
+                } else {
+                  showErrorDialog(context, 'Please, make sure to correctly fill both email and password fields...', 'OK');
                 }
+                
               } on FirebaseAuthException catch (e) {
-                devtools.log('Failed with error code: ${e.code}');
-                devtools.log(e.message.toString());
+                if (e.code == 'invalid-email') {
+                  showErrorDialog(context, 'The email you entered is invalid and could not be recognized. Please, double check it and try again...', 'OK');
+                } else if (e.code == 'invalid-credential') {
+                  showErrorDialog(context, 'Please, check your email and password or try again later...', 'OK');
+                } /* else if (e.code == 'user-not-found') {
+                  // ONLY WORKS IF "EMAIL ENUMERATION" IS ENABLED FROM FIREBASE AUTHENTICATION SETTINGS
+                  showErrorDialog(context, 'No registered account founded. Please, check your email address...', 'OK');
+                } else if (e.code == 'wrong-password') {
+                  // ONLY WORKS IF "EMAIL ENUMERATION" IS ENABLED FROM FIREBASE AUTHENTICATION SETTINGS
+                  showErrorDialog(context, 'The password you entered is incorrect. Please, double check it and try again...', 'OK');
+                } */
+                else {
+                  showErrorDialog(context, 'Please, check your email and password or try again later...', 'OK');
+                }
+
+                devtools.log(e.code);
+              } catch (e) {
+                showErrorDialog(context, 'An unknown error has occurred. Please, try again later...', 'OK');
               }
             },
             child: const Text('Login'),
