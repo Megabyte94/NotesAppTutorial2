@@ -7,7 +7,7 @@ import 'package:notes/views/email_verification.dart';
 import 'package:notes/views/login_view.dart';
 import 'package:notes/views/notes_view.dart';
 import 'package:notes/views/register_view.dart';
-//import 'dart:developer' as devtools show log;
+import 'dart:developer' as devtools show log;
 
 // App entry point
 void main() {
@@ -57,13 +57,15 @@ class InitialView extends StatelessWidget {
       builder: (context, snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.done:
-            final user = FirebaseAuth.instance.currentUser;
+            var user = FirebaseAuth.instance.currentUser;
             user?.reload();
             if (user != null) {
               if (user.emailVerified) {
                 return const NotesView();
               } else {
-                return const EmailVerificationView();
+                // Log the user out if their email is not verified, and redirect them to the login page.
+                FirebaseAuth.instance.signOut();
+                return const LoginView();
               }
             } else {
               return const LoginView();

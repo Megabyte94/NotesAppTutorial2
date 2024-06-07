@@ -56,19 +56,23 @@ class _LoginViewState extends State<LoginView> {
             onPressed: () async {
               try {
                 if (_email.text.isNotEmpty && _password.text.isNotEmpty) {
+                  var user = FirebaseAuth.instance.currentUser;
+                  if (user != null) {
+                    await FirebaseAuth.instance.signOut();
+                  }
                   await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email.text, password: _password.text);
-                  final user = FirebaseAuth.instance.currentUser;
+                  user = FirebaseAuth.instance.currentUser;
                   if (user != null) {
                     if (user.emailVerified) {
                       Navigator.of(context).pushNamedAndRemoveUntil(notesRoute, (route) => false);
                     } else {
-                      Navigator.of(context).pushNamedAndRemoveUntil(emailVerificationRoute, (route) => false);
+                      Navigator.of(context).pushNamed(emailVerificationRoute);
                     }
                   }
                 } else {
                   showErrorDialog(context, 'Please, make sure to correctly fill both email and password fields...', 'OK');
                 }
-                
+
               } on FirebaseAuthException catch (e) {
                 if (e.code == 'invalid-email') {
                   showErrorDialog(context, 'The email you entered is invalid and could not be recognized. Please, double check it and try again...', 'OK');
@@ -94,7 +98,7 @@ class _LoginViewState extends State<LoginView> {
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.of(context).pushNamedAndRemoveUntil('/register/', (route) => false);
+              Navigator.of(context).pushNamedAndRemoveUntil(registerRoute, (route) => false);
             },
             child: const Text('Not registered yet? Register here!'),
           ),
