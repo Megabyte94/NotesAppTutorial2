@@ -5,12 +5,12 @@ class InvalidEmailAuthException implements Exception {
 class InvalidCredentialAuthException implements Exception {
 
 }
-/* class WrongPasswordAuthException implements Exception {
+class WrongPasswordAuthException implements Exception {
 
 }
 class UserNotFoundAuthException implements Exception {
 
-} */
+}
 
 // Register exceptions
 class EmailAlreadyInUseAuthException implements Exception {
