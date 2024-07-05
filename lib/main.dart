@@ -1,12 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:notes/firebase_options.dart';
 import 'package:flutter/material.dart';
-import 'package:notes/constants/routes.dart';
-import 'package:notes/views/email_verification.dart';
-import 'package:notes/views/login_view.dart';
-import 'package:notes/views/notes_view.dart';
-import 'package:notes/views/register_view.dart';
+import 'package:notesapp/constants/routes.dart';
+import 'package:notesapp/services/auth/auth_service.dart';
+import 'package:notesapp/views/email_verification.dart';
+import 'package:notesapp/views/login_view.dart';
+import 'package:notesapp/views/notes_view.dart';
+import 'package:notesapp/views/register_view.dart';
 import 'dart:developer' as devtools show log;
 
 // App entry point
@@ -51,20 +49,18 @@ class InitialView extends StatelessWidget {
   Widget build(BuildContext context) {
     // Create a Scaffold widget with an AppBar and a body.
     return FutureBuilder(
-      future: Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      ),
+      future: AuthService.firebase().initialize(),
       builder: (context, snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.done:
-            var user = FirebaseAuth.instance.currentUser;
+            var user = AuthService.firebase().currentUser;
             user?.reload();
             if (user != null) {
               if (user.isEmailVerified) {
                 return const NotesView(); 
               } else {
                 // Log the user out if their email is not verified, and redirect them to the login page.
-                FirebaseAuth.instance.signOut();
+                AuthService.firebase().logOut();
                 return const LoginView();
               }
             } else {
