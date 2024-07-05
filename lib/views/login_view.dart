@@ -1,9 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
-import 'package:notes/constants/routes.dart';
-import 'package:notes/utilities/show_error_dialog.dart';
+import 'package:notesapp/constants/routes.dart';
+import 'package:notesapp/services/auth/auth_exceptions.dart';
+import 'package:notesapp/services/auth/auth_service.dart';
+import 'package:notesapp/utilities/show_error_dialog.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -56,14 +57,14 @@ class _LoginViewState extends State<LoginView> {
             onPressed: () async {
               try {
                 if (_email.text.isNotEmpty && _password.text.isNotEmpty) {
-                  var user = FirebaseAuth.instance.currentUser;
+                  var user = AuthService.firebase().currentUser;
                   if (user != null) {
-                    await FirebaseAuth.instance.signOut();
+                    await AuthService.firebase().logOut(); 
                   }
-                  await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email.text, password: _password.text);
-                  user = FirebaseAuth.instance.currentUser;
+                  await AuthService.firebase().login(email: _email.text, password: _password.text);
+                  user = AuthService.firebase().currentUser;
                   if (user != null) {
-                    if (user.emailVerified) {
+                    if (user.isEmailVerified) {
                       Navigator.of(context).pushNamedAndRemoveUntil(notesRoute, (route) => false);
                     } else {
                       Navigator.of(context).pushNamed(emailVerificationRoute);
@@ -73,25 +74,16 @@ class _LoginViewState extends State<LoginView> {
                   showErrorDialog(context, 'Please, make sure to correctly fill both email and password fields...', 'OK');
                 }
 
-              } on FirebaseAuthException catch (e) {
-                if (e.code == 'invalid-email') {
-                  showErrorDialog(context, 'The email you entered is invalid and could not be recognized. Please, double check it and try again...', 'OK');
-                } else if (e.code == 'invalid-credential') {
-                  showErrorDialog(context, 'Please, check your email and password or try again later...', 'OK');
-                } /* else if (e.code == 'user-not-found') {
-                  // ONLY WORKS IF "EMAIL ENUMERATION" IS ENABLED FROM FIREBASE AUTHENTICATION SETTINGS
-                  showErrorDialog(context, 'No registered account founded. Please, check your email address...', 'OK');
-                } else if (e.code == 'wrong-password') {
-                  // ONLY WORKS IF "EMAIL ENUMERATION" IS ENABLED FROM FIREBASE AUTHENTICATION SETTINGS
-                  showErrorDialog(context, 'The password you entered is incorrect. Please, double check it and try again...', 'OK');
-                } */
-                else {
-                  showErrorDialog(context, 'Please, check your email and password or try again later...', 'OK');
-                }
-
-                devtools.log(e.code);
-              } catch (e) {
-                showErrorDialog(context, 'An unknown error has occurred. Please, try again later...', 'OK');
+              } on InvalidEmailAuthException {
+                await showErrorDialog(context, 'The email you entered is invalid and could not be recognized. Please, double check it and try again...', 'OK');
+              } on InvalidCredentialAuthException {
+                await showErrorDialog(context, 'Please, check your email and password or try again later...', 'OK');
+              } /*on UserNotFoundAuthException { // ONLY WORKS IF EMAIL ENUMERATION IS ENABLED IN FIREBASE
+                await showErrorDialog(context, 'No registered account founded. Please, check your email address...', 'OK');
+              } on WrongPasswordAuthException { // ONLY WORKS IF EMAIL ENUMERATION IS ENABLED IN FIREBASE
+                await showErrorDialog(context, 'The password you entered is incorrect. Please, double check it and try again...', 'OK');
+              }*/ on UnknownAuthException {
+                await showErrorDialog(context, 'An unknown error has occurred. Please, try again later...', 'OK');
               }
             },
             child: const Text('Login'),

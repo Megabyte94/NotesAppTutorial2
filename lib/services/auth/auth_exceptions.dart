@@ -6,7 +6,7 @@ class InvalidCredentialAuthException implements Exception {
 
 }
 class WrongPasswordAuthException implements Exception {
-
+ 
 }
 class UserNotFoundAuthException implements Exception {
 

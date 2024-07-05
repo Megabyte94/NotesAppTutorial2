@@ -1,8 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:notes/constants/routes.dart';
-import 'package:notes/utilities/show_error_dialog.dart';
-import 'package:notes/utilities/show_logout_dialog.dart';
+import 'package:notesapp/constants/routes.dart';
+import 'package:notesapp/services/auth/auth_service.dart';
+import 'package:notesapp/utilities/show_error_dialog.dart';
+import 'package:notesapp/utilities/show_logout_dialog.dart';
 import 'dart:developer' as devtools show log;
 
 class EmailVerificationView extends StatefulWidget {
@@ -20,9 +20,9 @@ class _EmailVerificationViewState extends State<EmailVerificationView> {
   }
 
   Future<void> sendEmailVerification() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null && !user.emailVerified) {
-      await user.sendEmailVerification();
+    final user = AuthService.firebase().currentUser;
+    if (user != null && !user.isEmailVerified) {
+      await AuthService.firebase().sendEmailVerification();
     }
   }
 
@@ -37,10 +37,10 @@ class _EmailVerificationViewState extends State<EmailVerificationView> {
           const Text('In order to complete the registration process, we need you to verify your email address. Please check your email inbox and spam folder and click on the link we sent you to finish your account verification and setup.'),
           ElevatedButton(
             onPressed: () async {
-              final user = FirebaseAuth.instance.currentUser;
-              user?.reload();
+              await AuthService.firebase().currentUser?.reload(); 
+              final user = AuthService.firebase().currentUser;
               if (user != null) {
-                if (user.emailVerified) {
+                if (user.isEmailVerified) {
                   Navigator.of(context).pushNamedAndRemoveUntil(notesRoute, (route) => false);
                 } else {
                   showErrorDialog(context, 'Your email address has not been verified yet. Please, check your email inbox and spam folder and complete the process...', 'OK');

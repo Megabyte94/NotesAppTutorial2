@@ -60,8 +60,8 @@ class InitialView extends StatelessWidget {
             var user = FirebaseAuth.instance.currentUser;
             user?.reload();
             if (user != null) {
-              if (user.emailVerified) {
-                return const NotesView();
+              if (user.isEmailVerified) {
+                return const NotesView(); 
               } else {
                 // Log the user out if their email is not verified, and redirect them to the login page.
                 FirebaseAuth.instance.signOut();
