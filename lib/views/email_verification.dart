@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:notesapp/constants/routes.dart';
 import 'package:notesapp/services/auth/auth_service.dart';
 import 'package:notesapp/utilities/show_error_dialog.dart';
-import 'package:notesapp/utilities/show_logout_dialog.dart';
-import 'dart:developer' as devtools show log;
+//import 'package:notesapp/utilities/show_logout_dialog.dart';
+//import 'dart:developer' as devtools show log;
 
 class EmailVerificationView extends StatefulWidget {
-  const EmailVerificationView({Key? key}) : super(key: key);
+  const EmailVerificationView({super.key});
 
   @override
   State<EmailVerificationView> createState() => _EmailVerificationViewState();

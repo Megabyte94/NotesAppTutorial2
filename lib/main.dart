@@ -5,7 +5,6 @@ import 'package:notesapp/views/email_verification.dart';
 import 'package:notesapp/views/login_view.dart';
 import 'package:notesapp/views/notes_view.dart';
 import 'package:notesapp/views/register_view.dart';
-import 'dart:developer' as devtools show log;
 
 // App entry point
 void main() {
