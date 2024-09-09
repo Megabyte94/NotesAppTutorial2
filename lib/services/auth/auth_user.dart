@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 @immutable
 class AuthUser {
   final bool isEmailVerified;
-  const AuthUser(this.isEmailVerified);
+  const AuthUser({required this.isEmailVerified});
 
   Future<void> reload() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -13,7 +13,5 @@ class AuthUser {
     }
   }
 
-  factory AuthUser.fromFirebase(User? user) {
-    return AuthUser(user?.emailVerified ?? false);
-  }
+  factory AuthUser.fromFirebase(User? user) => AuthUser(isEmailVerified: user?.emailVerified ?? false);
 }
